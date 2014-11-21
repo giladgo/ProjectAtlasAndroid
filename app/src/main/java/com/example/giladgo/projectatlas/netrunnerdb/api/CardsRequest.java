@@ -15,8 +15,8 @@ import java.util.ArrayList;
  */
 public class CardsRequest extends NetrunnerRequest<Void, ArrayList<Card>> {
 
-    public CardsRequest(Context context, Void aVoid) {
-        super(context, aVoid);
+    public CardsRequest(Context context) {
+        super(context, null);
     }
 
     @Override

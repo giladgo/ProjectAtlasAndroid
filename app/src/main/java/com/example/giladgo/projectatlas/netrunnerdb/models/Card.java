@@ -6,4 +6,7 @@ package com.example.giladgo.projectatlas.netrunnerdb.models;
 public class Card {
     public String code;
     public String title;
+    public String type;
+    public String subtype;
+    public String faction;
 }

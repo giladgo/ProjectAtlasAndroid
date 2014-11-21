@@ -13,8 +13,19 @@ public class CardParser extends JsonParser<Card> {
         Card card = new Card();
         JsonObject jsonObject = getElementAsJsonObject(element);
 
-        card.code = jsonObject.get("code").getAsString();
-        card.title = jsonObject.get("title").getAsString();
+        card.code    = jsonObject.get("code").getAsString();
+        card.title   = jsonObject.get("title").getAsString();
+        card.type    = jsonObject.get("type").getAsString();
+
+        JsonElement subtypeElement = jsonObject.get("subtype");
+        if (subtypeElement != null) {
+            card.subtype = subtypeElement.getAsString();
+        }
+
+        JsonElement factionElement = jsonObject.get("faction");
+        if (factionElement != null) {
+            card.faction = factionElement.getAsString();
+        }
 
         return card;
     }
