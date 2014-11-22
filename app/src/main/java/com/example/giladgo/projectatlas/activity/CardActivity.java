@@ -1,33 +1,58 @@
 package com.example.giladgo.projectatlas.activity;
 
 import android.app.Activity;
-import android.net.Uri;
 import android.os.Bundle;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.ImageView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 
 import com.example.giladgo.projectatlas.R;
-import com.koushikdutta.ion.Ion;
 
-public class CardActivity extends Activity {
+import java.util.ArrayList;
 
-    public static final String CARD_URL_KEY = "cardurl";
+public class CardActivity extends FragmentActivity {
+
+    public static final String CARD_IMAGE_URLS_ARG = "card_imgs";
+    public static final String CARD_POSITION_ARG = "card_pos";
+
+    private ViewPager mPager;
+
+    private PagerAdapter mPagerAdapter;
+
+    private ArrayList<String> mCardImageUrls;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-
         setContentView(R.layout.activity_card);
 
-        final Uri cardImageUrl = Uri.parse("http://netrunnerdb.com" + getIntent().getStringExtra(CARD_URL_KEY));
+        mCardImageUrls = getIntent().getStringArrayListExtra(CARD_IMAGE_URLS_ARG);
 
-        ImageView cardImageView = (ImageView)this.findViewById(R.id.card_image);
-        if (cardImageView != null) {
-            Ion.with(cardImageView).load(cardImageUrl.toString());
+        mPager = (ViewPager)findViewById(R.id.card_pager);
+        mPagerAdapter = new CardPagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+
+        int cardPos = getIntent().getIntExtra(CARD_POSITION_ARG, 0);
+        mPager.setCurrentItem(cardPos);
+    }
+
+    private class CardPagerAdapter extends FragmentStatePagerAdapter {
+
+        public CardPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return CardFragment.newInstance(mCardImageUrls.get(position));
+        }
+
+        @Override
+        public int getCount() {
+            return mCardImageUrls.size();
         }
     }
 

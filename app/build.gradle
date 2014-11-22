@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.giladgo.projectatlasandroid"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -29,4 +29,5 @@ dependencies {
     compile 'com.google.code.gson:gson:2.2.4'
     compile 'com.koushikdutta.ion:ion:2.+'
     compile 'com.android.support:support-v4:21.0.2'
+    compile group: 'com.google.guava', name: 'guava', version: '18.0'
 }

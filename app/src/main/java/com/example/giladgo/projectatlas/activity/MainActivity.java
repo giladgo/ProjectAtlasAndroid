@@ -18,8 +18,11 @@ import com.example.giladgo.projectatlas.R;
 import com.example.giladgo.projectatlas.http.Callback;
 import com.example.giladgo.projectatlas.netrunnerdb.api.CardsRequest;
 import com.example.giladgo.projectatlas.netrunnerdb.models.Card;
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,12 +133,20 @@ public class MainActivity extends Activity {
         ListView listView = (ListView)this.findViewById(R.id.cardListView);
         listView.setAdapter(new CardsAdapter(this, R.layout.card_list_item, this.mCards));
 
+        final ArrayList<String> cardUrls = new ArrayList<>(Collections2.transform(mCards, new Function<Card, String>() {
+            @Override
+            public String apply(Card card) {
+                return card.imageUrl;
+            }
+        }));
+
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Card clickedCard = mCards.get(position);
                 Intent intent = new Intent(getApplicationContext(), CardActivity.class);
-                intent.putExtra(CardActivity.CARD_URL_KEY, clickedCard.imageUrl);
+
+                intent.putStringArrayListExtra(CardActivity.CARD_IMAGE_URLS_ARG, cardUrls);
+                intent.putExtra(CardActivity.CARD_POSITION_ARG, position);
                 startActivity(intent);
             }
         });

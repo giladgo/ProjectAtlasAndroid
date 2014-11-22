@@ -20,7 +20,12 @@ public class CardParser extends JsonParser<Card> {
         card.subtype     = getJsonString(jsonObject, "subtype");
         card.faction     = getJsonString(jsonObject, "faction");
         card.factionCode = getJsonString(jsonObject, "faction_code");
-        card.imageUrl    = getJsonString(jsonObject, "imagesrc");
+
+        String imageSrc = getJsonString(jsonObject, "imagesrc");
+        if (imageSrc != null && imageSrc.length() > 0)
+            card.imageUrl    = "http://netrunnerdb.com" + imageSrc;
+        else
+            card.imageUrl    = "";
 
         return card;
     }
