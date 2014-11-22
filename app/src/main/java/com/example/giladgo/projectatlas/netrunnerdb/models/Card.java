@@ -10,4 +10,6 @@ public class Card {
     public String subtype;
     public String faction;
     public String factionCode;
+    public String imageUrl;
+
 }
