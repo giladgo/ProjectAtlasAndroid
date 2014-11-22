@@ -20,6 +20,8 @@ public class CardParser extends JsonParser<Card> {
         card.subtype     = getJsonString(jsonObject, "subtype");
         card.faction     = getJsonString(jsonObject, "faction");
         card.factionCode = getJsonString(jsonObject, "faction_code");
+        card.setCode     = getJsonString(jsonObject, "set_code");
+        card.sideCode    = getJsonString(jsonObject, "side_code");
 
         String imageSrc = getJsonString(jsonObject, "imagesrc");
         if (imageSrc != null && imageSrc.length() > 0)

@@ -31,7 +31,6 @@ public class MainActivity extends Activity {
 
     private ArrayList<Card> mCards;
     private Typeface mNetrunnerFont;
-    private final Map<String, String> factionToSymbol;
 
     private class CardsAdapter extends ArrayAdapter<Card> {
 
@@ -81,7 +80,7 @@ public class MainActivity extends Activity {
                         );
                 factionLogoView.setTextColor(getResources().getColor(colorId));
 
-                String symbol = factionToSymbol.get(card.factionCode);
+                String symbol = card.getSymbol();
                 if (symbol != null) {
                     factionLogoView.setText(symbol);
                 } else {
@@ -95,14 +94,6 @@ public class MainActivity extends Activity {
     }
 
     public MainActivity() {
-        this.factionToSymbol = new HashMap<>();
-        this.factionToSymbol.put("shaper",             "\ue613");
-        this.factionToSymbol.put("anarch",             "\ue605");
-        this.factionToSymbol.put("criminal",           "\ue612");
-        this.factionToSymbol.put("haas-bioroid",       "\ue602");
-        this.factionToSymbol.put("weyland-consortium", "\ue607");
-        this.factionToSymbol.put("jinteki",            "\ue609");
-        this.factionToSymbol.put("nbn",                "\ue60b");
 
     }
 
