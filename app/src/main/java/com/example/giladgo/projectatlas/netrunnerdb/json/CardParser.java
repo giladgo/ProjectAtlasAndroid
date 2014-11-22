@@ -27,6 +27,11 @@ public class CardParser extends JsonParser<Card> {
             card.faction = factionElement.getAsString();
         }
 
+        JsonElement factionCodeElement = jsonObject.get("faction_code");
+        if (factionCodeElement != null) {
+            card.factionCode = factionCodeElement.getAsString();
+        }
+
         return card;
     }
 }

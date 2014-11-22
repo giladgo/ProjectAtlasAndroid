@@ -9,4 +9,5 @@ public class Card {
     public String type;
     public String subtype;
     public String faction;
+    public String factionCode;
 }
