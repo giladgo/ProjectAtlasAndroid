@@ -7,9 +7,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 
 import com.example.giladgo.projectatlas.R;
+import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.koushikdutta.ion.ProgressCallback;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,8 +53,19 @@ public class CardFragment extends Fragment {
         final Uri cardImageUrl = Uri.parse(mCardUrl);
 
         ImageView cardImageView = (ImageView)view.findViewById(R.id.card_image);
+        final ProgressBar progressBar = (ProgressBar)view.findViewById(R.id.card_progressbar);
+
         if (cardImageView != null) {
-            Ion.with(cardImageView).load(cardImageUrl.toString());
+            Ion.with(this)
+                    .load(cardImageUrl.toString())
+                    .progressBar(progressBar)
+                    .intoImageView(cardImageView).setCallback(new FutureCallback<ImageView>() {
+                @Override
+                public void onCompleted(Exception e, ImageView result) {
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+            });
+
         }
 
         return view;

@@ -1,15 +1,23 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
     android:layout_height="match_parent" android:paddingLeft="0dp"
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+    tools:context=".MainActivity">
+
+
 
     <ListView
         android:layout_width="fill_parent"
-        android:layout_height="0dp"
-        android:id="@+id/cardListView"
-        android:layout_weight="1"/>
-</LinearLayout>
+        android:layout_height="fill_parent"
+        android:id="@+id/cardListView"/>
+
+    <ProgressBar
+        android:id="@+id/main_progress_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+        android:layout_centerInParent="true" />
+
+</RelativeLayout>

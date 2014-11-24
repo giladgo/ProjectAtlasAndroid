@@ -1,7 +1,6 @@
 package com.example.giladgo.projectatlas.activity;
 
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
@@ -13,30 +12,29 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.example.giladgo.projectatlas.R;
-import com.example.giladgo.projectatlas.http.Callback;
-import com.example.giladgo.projectatlas.netrunnerdb.api.CardsRequest;
+import com.example.giladgo.projectatlas.netrunnerdb.json.CardParser;
+import com.example.giladgo.projectatlas.netrunnerdb.json.JsonListParser;
 import com.example.giladgo.projectatlas.netrunnerdb.models.Card;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
+import com.google.gson.JsonArray;
+import com.koushikdutta.async.future.FutureCallback;
+import com.koushikdutta.ion.Ion;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class MainActivity extends Activity {
 
@@ -202,20 +200,31 @@ public class MainActivity extends Activity {
         mNetrunnerFont = Typeface.createFromAsset(getAssets(), "netrunner.ttf");
 
         mListView = (ListView)this.findViewById(R.id.cardListView);
+        final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
 
-        CardsRequest cardsRequest = new CardsRequest(this);
-        cardsRequest.sendAsync(new Callback<ArrayList<Card>>() {
-            @Override
-            public void error(Exception ex) {
-                Log.e("", "Error loading cards", ex);
-            }
+        Ion.with(this).load("http://www.netrunnerdb.com/api/cards/")
+                .progressBar(mainProgressBar)
+                .asJsonArray()
+                .setCallback(new FutureCallback<JsonArray>() {
+                    @Override
+                    public void onCompleted(Exception ex, JsonArray array) {
+                        if (ex != null) {
+                            Log.e("", "Error loading cards", ex);
+                        }
+                        else {
+                            List<Card> cards = new JsonListParser<>(new CardParser()).parse(array);
+                            MainActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
+                                @Override
+                                public boolean apply(Card card) {
+                                    return card.isReal();
+                                }
+                            }));
+                            mainProgressBar.setVisibility(View.INVISIBLE);
+                            populateListView();
+                        }
+                    }
+                });
 
-            @Override
-            public void success(ArrayList<Card> cards) {
-                MainActivity.this.mCards = cards;
-                populateListView();
-            }
-        });
 
     }
 
