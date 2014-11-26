@@ -32,6 +32,9 @@ import com.google.common.collect.Collections2;
 import com.google.gson.JsonArray;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
+import com.parse.ConfigCallback;
+import com.parse.ParseConfig;
+import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -210,28 +213,34 @@ public class MainActivity extends Activity {
         mListView = (ListView)this.findViewById(R.id.cardListView);
         final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
 
-        Ion.with(this).load("http://www.netrunnerdb.com/api/cards/")
-                .progressBar(mainProgressBar)
-                .asJsonArray()
-                .setCallback(new FutureCallback<JsonArray>() {
-                    @Override
-                    public void onCompleted(Exception ex, JsonArray array) {
-                        if (ex != null) {
-                            Log.e("", "Error loading cards", ex);
-                        }
-                        else {
-                            List<Card> cards = new JsonListParser<>(new CardParser()).parse(array);
-                            MainActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
-                                @Override
-                                public boolean apply(Card card) {
-                                    return card.isReal();
+        ParseConfig.getInBackground(new ConfigCallback() {
+            @Override
+            public void done(ParseConfig parseConfig, ParseException e) {
+                Ion.with(MainActivity.this).load(parseConfig.getString("card_url"))
+                        .progressBar(mainProgressBar)
+                        .asJsonArray()
+                        .setCallback(new FutureCallback<JsonArray>() {
+                            @Override
+                            public void onCompleted(Exception ex, JsonArray array) {
+                                if (ex != null) {
+                                    Log.e("", "Error loading cards", ex);
                                 }
-                            }));
-                            mainProgressBar.setVisibility(View.INVISIBLE);
-                            populateListView();
-                        }
-                    }
-                });
+                                else {
+                                    List<Card> cards = new JsonListParser<>(new CardParser()).parse(array);
+                                    MainActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
+                                        @Override
+                                        public boolean apply(Card card) {
+                                            return card.isReal();
+                                        }
+                                    }));
+                                    mainProgressBar.setVisibility(View.INVISIBLE);
+                                    populateListView();
+                                }
+                            }
+                        });
+
+            }
+        });
 
 
     }
