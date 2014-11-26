@@ -22,7 +22,6 @@
         </activity>
         <activity
             android:name="com.example.giladgo.projectatlas.activity.CardActivity"
-            android:label="@string/title_activity_card"
             android:parentActivityName="com.example.giladgo.projectatlas.activity.MainActivity"
             android:theme="@style/Theme.Transparent">
             <meta-data
