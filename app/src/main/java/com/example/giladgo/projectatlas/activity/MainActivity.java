@@ -152,7 +152,7 @@ public class MainActivity extends Activity {
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     mShowingCards = (List<Card>)results.values;
-                    MainActivity.this.setTitle(constraint);
+                    MainActivity.this.setActionBarTitle(constraint);
                     notifyDataSetChanged();
                 }
             };
@@ -191,11 +191,19 @@ public class MainActivity extends Activity {
         return true;
     }
 
+    private void setActionBarTitle(CharSequence title) {
+        if (title == null || title.length() == 0) {
+            setTitle("NetConsole");
+        } else {
+            setTitle(title);
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle("Project Atlas");
+        setActionBarTitle(null);
 
         mNetrunnerFont = Typeface.createFromAsset(getAssets(), "netrunner.ttf");
 
