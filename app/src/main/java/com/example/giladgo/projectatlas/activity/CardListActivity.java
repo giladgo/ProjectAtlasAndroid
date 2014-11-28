@@ -39,7 +39,7 @@ import com.parse.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity {
+public class CardListActivity extends Activity {
 
     private ArrayList<Card> mCards;
 
@@ -112,7 +112,7 @@ public class MainActivity extends Activity {
                 int colorId = getResources().getIdentifier(
                                 card.factionCode.replace('-','_'),
                                 "color",
-                                MainActivity.this.getPackageName()
+                                CardListActivity.this.getPackageName()
                         );
                 factionLogoView.setTextColor(getResources().getColor(colorId));
 
@@ -160,14 +160,14 @@ public class MainActivity extends Activity {
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     mShowingCards = (List<Card>)results.values;
-                    MainActivity.this.setActionBarTitle(constraint);
+                    CardListActivity.this.setActionBarTitle(constraint);
                     notifyDataSetChanged();
                 }
             };
         }
     }
 
-    public MainActivity() {
+    public CardListActivity() {
 
     }
 
@@ -221,7 +221,7 @@ public class MainActivity extends Activity {
         ParseConfig.getInBackground(new ConfigCallback() {
             @Override
             public void done(ParseConfig parseConfig, ParseException e) {
-                Ion.with(MainActivity.this).load(parseConfig.getString("card_url"))
+                Ion.with(CardListActivity.this).load(parseConfig.getString("card_url"))
                         .progressBar(mainProgressBar)
                         .asJsonArray()
                         .setCallback(new FutureCallback<JsonArray>() {
@@ -232,7 +232,7 @@ public class MainActivity extends Activity {
                                 }
                                 else {
                                     List<Card> cards = new JsonListParser<>(new CardParser()).parse(array);
-                                    MainActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
+                                    CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
                                         @Override
                                         public boolean apply(Card card) {
                                             return card.isReal();

@@ -12,7 +12,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.giladgo.projectatlas.activity.MainActivity"
+            android:name=".activity.CardListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,11 +22,11 @@
         </activity>
         <activity
             android:name="com.example.giladgo.projectatlas.activity.CardActivity"
-            android:parentActivityName="com.example.giladgo.projectatlas.activity.MainActivity"
+            android:parentActivityName=".activity.CardListActivity"
             android:theme="@style/Theme.Transparent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.giladgo.projectatlas.activity.MainActivity" />
+                android:value=".activity.CardListActivity" />
         </activity>
     </application>
 
