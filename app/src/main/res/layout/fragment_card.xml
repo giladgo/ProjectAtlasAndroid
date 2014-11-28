@@ -6,7 +6,7 @@
     android:paddingRight="0dp"
     android:paddingTop="0dp"
     android:paddingBottom="0dp"
-    tools:context="com.example.giladgo.projectatlas.activity.CardActivity">
+    tools:context="net.grndl.projectatlas.activity.CardActivity">
 
 
     <ImageView

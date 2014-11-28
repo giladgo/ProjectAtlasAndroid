@@ -1,6 +1,6 @@
-package com.example.giladgo.projectatlas.netrunnerdb.json;
+package net.grndl.projectatlas.netrunnerdb.json;
 
-import com.example.giladgo.projectatlas.netrunnerdb.models.Card;
+import net.grndl.projectatlas.netrunnerdb.models.Card;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 

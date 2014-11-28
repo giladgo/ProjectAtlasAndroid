@@ -1,4 +1,4 @@
-package com.example.giladgo.projectatlas.http;
+package net.grndl.projectatlas.http;
 
 import android.content.Context;
 import android.net.Uri;

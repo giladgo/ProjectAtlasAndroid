@@ -1,4 +1,4 @@
-package com.example.giladgo.projectatlas.http;
+package net.grndl.projectatlas.http;
 
 /**
  * Created by giladgo on 11/24/13.

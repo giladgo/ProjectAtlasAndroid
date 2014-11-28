@@ -1,4 +1,4 @@
-package com.example.giladgo.projectatlas.activity;
+package net.grndl.projectatlas.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -9,10 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.example.giladgo.projectatlas.R;
+import net.grndl.projectatlas.R;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
-import com.koushikdutta.ion.ProgressCallback;
 
 /**
  * A simple {@link Fragment} subclass.

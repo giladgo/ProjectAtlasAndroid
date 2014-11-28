@@ -1,15 +1,18 @@
-package com.example.giladgo.projectatlas.activity;
+package net.grndl.projectatlas.activity;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -22,19 +25,16 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.example.giladgo.projectatlas.R;
-import com.example.giladgo.projectatlas.netrunnerdb.json.CardParser;
-import com.example.giladgo.projectatlas.netrunnerdb.json.JsonListParser;
-import com.example.giladgo.projectatlas.netrunnerdb.models.Card;
+import net.grndl.projectatlas.R;
+import net.grndl.projectatlas.netrunnerdb.models.Card;
+import net.grndl.projectatlas.netrunnerdb.models.CardDB;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
-import com.google.gson.JsonArray;
-import com.koushikdutta.async.future.FutureCallback;
-import com.koushikdutta.ion.Ion;
-import com.parse.ConfigCallback;
-import com.parse.ParseConfig;
-import com.parse.ParseException;
+import com.google.common.collect.Lists;
+
+import org.jdeferred.DoneCallback;
+import org.jdeferred.ProgressCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,6 +46,7 @@ public class CardListActivity extends Activity {
     private Typeface mNetrunnerFont;
     private ListView mListView;
     private CardsAdapter mAdapter;
+    private Card mRecommendationsForCard;
 
     private class CardsAdapter extends BaseAdapter implements Filterable {
 
@@ -122,7 +123,6 @@ public class CardListActivity extends Activity {
                 } else {
                     factionLogoView.setText("");
                 }
-
             }
 
             TextView influenceView = (TextView)rowView.findViewById(R.id.influence);
@@ -176,24 +176,29 @@ public class CardListActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.options_menu, menu);
 
-        final SearchView searchView = (SearchView) menu.findItem(R.id.search).getActionView();
-        if (searchView != null) {
-            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-                @Override
-                public boolean onQueryTextSubmit(String query) {
-                    mListView.requestFocus();
-                    InputMethodManager imm = (InputMethodManager)getSystemService(
-                            Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-                    return true;
-                }
+        MenuItem searchMenuItem = menu.findItem(R.id.search);
+        if (searchMenuItem != null) {
+            if (mRecommendationsForCard != null) {
+                searchMenuItem.setVisible(false);
+            } else {
+                final SearchView searchView = (SearchView) searchMenuItem.getActionView();
+                searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                    @Override
+                    public boolean onQueryTextSubmit(String query) {
+                        mListView.requestFocus();
+                        InputMethodManager imm = (InputMethodManager) getSystemService(
+                                Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                        return true;
+                    }
 
-                @Override
-                public boolean onQueryTextChange(String newText) {
-                    mAdapter.getFilter().filter(newText);
-                    return true;
-                }
-            });
+                    @Override
+                    public boolean onQueryTextChange(String newText) {
+                        mAdapter.getFilter().filter(newText);
+                        return true;
+                    }
+                });
+            }
         }
 
         return true;
@@ -207,55 +212,54 @@ public class CardListActivity extends Activity {
         }
     }
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setActionBarTitle(null);
 
         mNetrunnerFont = Typeface.createFromAsset(getAssets(), "netrunner.ttf");
 
         mListView = (ListView)this.findViewById(R.id.cardListView);
         final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
 
-        ParseConfig.getInBackground(new ConfigCallback() {
-            @Override
-            public void done(ParseConfig parseConfig, ParseException e) {
-                Ion.with(CardListActivity.this).load(parseConfig.getString("card_url"))
-                        .progressBar(mainProgressBar)
-                        .asJsonArray()
-                        .setCallback(new FutureCallback<JsonArray>() {
-                            @Override
-                            public void onCompleted(Exception ex, JsonArray array) {
-                                if (ex != null) {
-                                    Log.e("", "Error loading cards", ex);
-                                }
-                                else {
-                                    List<Card> cards = new JsonListParser<>(new CardParser()).parse(array);
-                                    CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
-                                        @Override
-                                        public boolean apply(Card card) {
-                                            return card.isReal();
-                                        }
-                                    }));
-                                    mainProgressBar.setVisibility(View.INVISIBLE);
-                                    populateListView();
-                                }
-                            }
-                        });
-
-            }
-        });
-
-
+        if (getIntent().hasExtra("recommendationsFor")) {
+            mRecommendationsForCard = getIntent().getParcelableExtra("recommendationsFor");
+            mCards = Lists.newArrayList(CardDB.getInstance().recommendedCards(mRecommendationsForCard.code));
+            populateListView();
+            setActionBarTitle("Recommendations For " + mRecommendationsForCard.title);
+        } else {
+            setActionBarTitle(null);
+            mainProgressBar.setMax(100);
+            mRecommendationsForCard = null;
+            CardDB.getInstance().load(this).progress(new ProgressCallback<Integer>() {
+                @Override
+                public void onProgress(Integer progress) {
+                    mainProgressBar.setProgress(progress);
+                }
+            }).then(new DoneCallback<List<Card>>() {
+                @Override
+                public void onDone(List<Card> cards) {
+                    CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
+                        @Override
+                        public boolean apply(Card card) {
+                            return card.isReal();
+                        }
+                    }));
+                    populateListView();
+                }
+            });
+        }
     }
 
     private void populateListView() {
-
+        final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
+        mainProgressBar.setVisibility(View.INVISIBLE);
         mAdapter = new CardsAdapter(this, R.layout.card_list_item, this.mCards);
         mListView.setAdapter(mAdapter);
 
-
+        registerForContextMenu(mListView);
+        ActivityCompat.invalidateOptionsMenu(this);
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -275,5 +279,28 @@ public class CardListActivity extends Activity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterView.AdapterContextMenuInfo adapterMenuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+        Card selectedCard = mCards.get(adapterMenuInfo.position);
+        if (item.getItemId() == R.id.recommendation_menu_item) {
+            Intent intent = new Intent(this, CardListActivity.class);
+            intent.putExtra("recommendationsFor", selectedCard);
+            startActivity(intent);
+            return true;
+        } else {
+            return super.onContextItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.card_menu, menu);
+
     }
 }

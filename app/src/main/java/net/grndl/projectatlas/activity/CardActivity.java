@@ -1,6 +1,5 @@
-package com.example.giladgo.projectatlas.activity;
+package net.grndl.projectatlas.activity;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,7 +10,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.util.TypedValue;
 
-import com.example.giladgo.projectatlas.R;
+import net.grndl.projectatlas.R;
 
 import java.util.ArrayList;
 

@@ -1,4 +1,4 @@
-package com.example.giladgo.projectatlas.netrunnerdb.json;
+package net.grndl.projectatlas.netrunnerdb.json;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

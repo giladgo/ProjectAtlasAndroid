@@ -3,5 +3,6 @@
 
     <string name="app_name">NetConsole</string>
     <string name="action_settings">Settings</string>
+    <string name="show_recommendations">Show Recommendations</string>
 
 </resources>

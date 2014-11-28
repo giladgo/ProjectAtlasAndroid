@@ -1,4 +1,4 @@
-package com.example.giladgo.projectatlas;
+package net.grndl.projectatlas;
 
 import com.parse.Parse;
 

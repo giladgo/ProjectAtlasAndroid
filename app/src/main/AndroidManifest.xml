@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.giladgo.projectatlas"  >
+    package="net.grndl.projectatlas"  >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -8,11 +8,11 @@
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
-        android:name=".Application"
+        android:name="net.grndl.projectatlas.Application"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".activity.CardListActivity"
+            android:name="net.grndl.projectatlas.activity.CardListActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,12 +21,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.giladgo.projectatlas.activity.CardActivity"
-            android:parentActivityName=".activity.CardListActivity"
+            android:name="net.grndl.projectatlas.activity.CardActivity"
+            android:parentActivityName="net.grndl.projectatlas.activity.CardListActivity"
             android:theme="@style/Theme.Transparent">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.CardListActivity" />
+                android:value="net.grndl.projectatlas.activity.CardListActivity" />
         </activity>
     </application>
 
