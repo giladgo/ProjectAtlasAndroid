@@ -11,6 +11,7 @@
     <ListView
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        tools:listitem="@layout/card_list_item"
         android:id="@+id/cardListView"/>
 
     <ProgressBar

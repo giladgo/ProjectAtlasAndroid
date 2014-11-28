@@ -16,6 +16,7 @@ public class Card {
     public String imageUrl;
     public String setCode;
     public String sideCode;
+    public int influence;
 
     private static final Map<String, String> mFactionToSymbol = initFactionSymbolTable();
 

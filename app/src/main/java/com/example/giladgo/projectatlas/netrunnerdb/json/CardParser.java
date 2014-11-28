@@ -22,6 +22,7 @@ public class CardParser extends JsonParser<Card> {
         card.factionCode = getJsonString(jsonObject, "faction_code");
         card.setCode     = getJsonString(jsonObject, "set_code");
         card.sideCode    = getJsonString(jsonObject, "side_code");
+        card.influence   = getJsonInt(jsonObject, "factioncost");
 
         String imageSrc = getJsonString(jsonObject, "imagesrc");
         if (imageSrc != null && imageSrc.length() > 0)

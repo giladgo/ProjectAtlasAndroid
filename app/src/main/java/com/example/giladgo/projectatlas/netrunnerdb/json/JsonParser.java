@@ -27,6 +27,16 @@ public abstract class JsonParser<T> {
         return null;
     }
 
+    protected int getJsonInt(JsonObject object, String fieldName) {
+        if (object.has(fieldName)) {
+            JsonElement e = object.get(fieldName);
+            if (e instanceof JsonPrimitive)
+                return e.getAsInt();
+        }
+
+        return 0;
+    }
+
     protected JsonParser() {
     }
 

@@ -125,6 +125,11 @@ public class MainActivity extends Activity {
 
             }
 
+            TextView influenceView = (TextView)rowView.findViewById(R.id.influence);
+            if (influenceView != null) {
+                influenceView.setText(new String(new char[card.influence]).replace("\0", "•\n"));
+            }
+
             return rowView;
         }
 
