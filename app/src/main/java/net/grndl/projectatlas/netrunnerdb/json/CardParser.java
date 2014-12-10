@@ -1,5 +1,7 @@
 package net.grndl.projectatlas.netrunnerdb.json;
 
+import android.net.Uri;
+
 import net.grndl.projectatlas.netrunnerdb.models.Card;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +31,8 @@ public class CardParser extends JsonParser<Card> {
             card.imageUrl    = "http://netrunnerdb.com" + imageSrc;
         else
             card.imageUrl    = "";
+
+        card.url = Uri.parse(getJsonString(jsonObject, "url"));
 
         return card;
     }

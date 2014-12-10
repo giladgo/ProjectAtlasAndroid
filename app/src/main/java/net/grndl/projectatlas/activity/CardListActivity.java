@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
 import android.util.Log;
@@ -232,23 +234,27 @@ public class CardListActivity extends Activity {
             setActionBarTitle(null);
             mainProgressBar.setMax(100);
             mRecommendationsForCard = null;
-            CardDB.getInstance().load(this).progress(new ProgressCallback<Integer>() {
-                @Override
-                public void onProgress(Integer progress) {
-                    mainProgressBar.setProgress(progress);
-                }
-            }).then(new DoneCallback<List<Card>>() {
-                @Override
-                public void onDone(List<Card> cards) {
-                    CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
-                        @Override
-                        public boolean apply(Card card) {
-                            return card.isReal();
-                        }
-                    }));
-                    populateListView();
-                }
-            });
+            if (mCards == null) {
+                CardDB.getInstance().load(this).progress(new ProgressCallback<Integer>() {
+                    @Override
+                    public void onProgress(Integer progress) {
+                        mainProgressBar.setProgress(progress);
+                    }
+                }).then(new DoneCallback<List<Card>>() {
+                    @Override
+                    public void onDone(List<Card> cards) {
+                        CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
+                            @Override
+                            public boolean apply(Card card) {
+                                return card.isReal();
+                            }
+                        }));
+                        populateListView();
+                    }
+                });
+            } else {
+                populateListView();
+            }
         }
     }
 
@@ -259,7 +265,7 @@ public class CardListActivity extends Activity {
         mListView.setAdapter(mAdapter);
 
         registerForContextMenu(mListView);
-        ActivityCompat.invalidateOptionsMenu(this);
+        invalidateOptionsMenu();
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -285,13 +291,17 @@ public class CardListActivity extends Activity {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo adapterMenuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
         Card selectedCard = mCards.get(adapterMenuInfo.position);
-        if (item.getItemId() == R.id.recommendation_menu_item) {
-            Intent intent = new Intent(this, CardListActivity.class);
-            intent.putExtra("recommendationsFor", selectedCard);
-            startActivity(intent);
-            return true;
-        } else {
-            return super.onContextItemSelected(item);
+        switch(item.getItemId()) {
+            case R.id.recommendation_menu_item:
+                Intent intent = new Intent(this, CardListActivity.class);
+                intent.putExtra("recommendationsFor", selectedCard);
+                startActivity(intent);
+                return true;
+            case R.id.nrdb_menu_item:
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, selectedCard.url);
+                startActivity(browserIntent);
+            default:
+                return super.onContextItemSelected(item);
         }
     }
 
@@ -302,5 +312,15 @@ public class CardListActivity extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.card_menu, menu);
 
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        outState.putParcelableArrayList("cards", mCards);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
+        mCards = savedInstanceState.getParcelableArrayList("cards");
     }
 }

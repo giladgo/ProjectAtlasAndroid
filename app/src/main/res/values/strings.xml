@@ -4,5 +4,6 @@
     <string name="app_name">NetConsole</string>
     <string name="action_settings">Settings</string>
     <string name="show_recommendations">Show Recommendations</string>
+    <string name="open_in_nrdb">Open in NetrunnerDB</string>
 
 </resources>

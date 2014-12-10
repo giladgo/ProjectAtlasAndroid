@@ -1,5 +1,6 @@
 package net.grndl.projectatlas.netrunnerdb.models;
 
+import android.net.Uri;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -20,6 +21,7 @@ public class Card implements Parcelable {
     public String imageUrl;
     public String setCode;
     public String sideCode;
+    public Uri url;
     public int influence;
     public List<Card> recommendations;
 
