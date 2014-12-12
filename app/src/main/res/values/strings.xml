@@ -5,5 +5,8 @@
     <string name="action_settings">Settings</string>
     <string name="show_recommendations">Show Recommendations</string>
     <string name="open_in_nrdb">Open in NetrunnerDB</string>
+    <string name="title_activity_loader">LoaderActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="loading">Loading...</string>
 
 </resources>

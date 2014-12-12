@@ -223,44 +223,26 @@ public class CardListActivity extends Activity {
         mNetrunnerFont = Typeface.createFromAsset(getAssets(), "netrunner.ttf");
 
         mListView = (ListView)this.findViewById(R.id.cardListView);
-        final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
+
 
         if (getIntent().hasExtra("recommendationsFor")) {
             mRecommendationsForCard = getIntent().getParcelableExtra("recommendationsFor");
-            mCards = Lists.newArrayList(CardDB.getInstance().recommendedCards(mRecommendationsForCard.code));
-            populateListView();
             setActionBarTitle("Recommendations For " + mRecommendationsForCard.title);
+            mCards = Lists.newArrayList(CardDB.getInstance().recommendedCards(mRecommendationsForCard.code));
         } else {
-            setActionBarTitle(null);
-            mainProgressBar.setMax(100);
             mRecommendationsForCard = null;
-            if (mCards == null) {
-                CardDB.getInstance().load(this).progress(new ProgressCallback<Integer>() {
-                    @Override
-                    public void onProgress(Integer progress) {
-                        mainProgressBar.setProgress(progress);
-                    }
-                }).then(new DoneCallback<List<Card>>() {
-                    @Override
-                    public void onDone(List<Card> cards) {
-                        CardListActivity.this.mCards = new ArrayList<>(Collections2.filter(cards, new Predicate<Card>() {
-                            @Override
-                            public boolean apply(Card card) {
-                                return card.isReal();
-                            }
-                        }));
-                        populateListView();
-                    }
-                });
-            } else {
-                populateListView();
-            }
+            setActionBarTitle(null);
+            mCards = new ArrayList<>(Collections2.filter(CardDB.getInstance().allCards(), new Predicate<Card>() {
+                @Override
+                public boolean apply(Card card) {
+                    return card.isReal();
+                }
+            }));
         }
+        populateListView();
     }
 
     private void populateListView() {
-        final ProgressBar mainProgressBar = (ProgressBar)this.findViewById(R.id.main_progress_bar);
-        mainProgressBar.setVisibility(View.INVISIBLE);
         mAdapter = new CardsAdapter(this, R.layout.card_list_item, this.mCards);
         mListView.setAdapter(mAdapter);
 
@@ -300,6 +282,7 @@ public class CardListActivity extends Activity {
             case R.id.nrdb_menu_item:
                 Intent browserIntent = new Intent(Intent.ACTION_VIEW, selectedCard.url);
                 startActivity(browserIntent);
+                return true;
             default:
                 return super.onContextItemSelected(item);
         }
