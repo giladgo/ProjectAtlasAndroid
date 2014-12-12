@@ -22,9 +22,9 @@ import org.jdeferred.DonePipe;
 import org.jdeferred.Promise;
 import org.jdeferred.impl.DeferredObject;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.ArrayList;g
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -128,7 +128,7 @@ public class CardDB {
         }).then(new DonePipe<List<Card>, JsonArray, Exception, Void>() {
             @Override
             public Promise<JsonArray, Exception, Void> pipeDone(List<Card> cards) {
-            mCards = new HashMap<>(cards.size());
+            mCards = new LinkedHashMap<>(cards.size());
 
             for (Card card : cards) {
                 mCards.put(card.code, card);
