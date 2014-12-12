@@ -49,21 +49,29 @@ public class CardFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_card, container, false);
         view.findViewById(R.id.card_image);
 
-        final Uri cardImageUrl = Uri.parse(mCardUrl);
+
 
         ImageView cardImageView = (ImageView)view.findViewById(R.id.card_image);
         final ProgressBar progressBar = (ProgressBar)view.findViewById(R.id.card_progressbar);
 
         if (cardImageView != null) {
-            Ion.with(this)
-                    .load(cardImageUrl.toString())
-                    .progressBar(progressBar)
-                    .intoImageView(cardImageView).setCallback(new FutureCallback<ImageView>() {
-                @Override
-                public void onCompleted(Exception e, ImageView result) {
-                    progressBar.setVisibility(View.INVISIBLE);
-                }
-            });
+            if (mCardUrl != null && !mCardUrl.isEmpty()) {
+                Uri cardImageUrl = Uri.parse(mCardUrl);
+                Ion.with(this)
+                        .load(cardImageUrl.toString())
+                        .progressBar(progressBar)
+                        .intoImageView(cardImageView)
+                        .setCallback(new FutureCallback<ImageView>() {
+                            @Override
+                            public void onCompleted(Exception e, ImageView result) {
+                                progressBar.setVisibility(View.INVISIBLE);
+                            }
+                        });
+
+            } else {
+                cardImageView.setImageResource(R.drawable.sad_panda);
+                progressBar.setVisibility(View.INVISIBLE);
+            }
 
         }
 
