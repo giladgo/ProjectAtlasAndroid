@@ -1,8 +1,6 @@
 package net.grndl.projectatlas.netrunnerdb.models;
 
 import android.net.Uri;
-import android.os.Parcel;
-import android.os.Parcelable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +9,8 @@ import java.util.Map;
 /**
  * Created by giladgo on 11/21/14.
  */
-public class Card implements Parcelable {
+public class Card {
+
     public String code;
     public String title;
     public String type;
@@ -24,6 +23,7 @@ public class Card implements Parcelable {
     public Uri url;
     public int influence;
     public List<Card> recommendations;
+
 
     private static final Map<String, String> mFactionToSymbol = initFactionSymbolTable();
 
@@ -56,25 +56,4 @@ public class Card implements Parcelable {
         return null;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(code);
-    }
-
-
-    public static final Parcelable.Creator<Card> CREATOR
-            = new Parcelable.Creator<Card>() {
-        public Card createFromParcel(Parcel in) {
-            return CardDB.getInstance().getCard(in.readString());
-        }
-
-        public Card[] newArray(int size) {
-            return new Card[size];
-        }
-    };
 }

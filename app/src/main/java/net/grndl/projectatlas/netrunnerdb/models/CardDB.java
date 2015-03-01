@@ -1,9 +1,8 @@
 package net.grndl.projectatlas.netrunnerdb.models;
 
 import android.content.Context;
+import android.util.Log;
 
-import net.grndl.projectatlas.netrunnerdb.json.CardParser;
-import net.grndl.projectatlas.netrunnerdb.json.JsonListParser;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -16,6 +15,9 @@ import com.koushikdutta.ion.ProgressCallback;
 import com.parse.ConfigCallback;
 import com.parse.ParseConfig;
 import com.parse.ParseException;
+
+import net.grndl.projectatlas.netrunnerdb.json.CardParser;
+import net.grndl.projectatlas.netrunnerdb.json.JsonListParser;
 
 import org.jdeferred.Deferred;
 import org.jdeferred.DonePipe;
@@ -33,17 +35,10 @@ import java.util.Map;
  */
 public class CardDB {
 
-    private static CardDB mInstance = null;
-
     private Map<String, Card> mCards;
 
-    private CardDB() {
-
-    }
-
-    public static CardDB getInstance() {
-        if (mInstance == null) mInstance = new CardDB();
-        return mInstance;
+    CardDB() {
+        mCards = new LinkedHashMap<>();
     }
 
 
@@ -82,6 +77,7 @@ public class CardDB {
         ParseConfig.getInBackground(new ConfigCallback() {
             @Override
             public void done(ParseConfig parseConfig, ParseException e) {
+                Log.v("ZXXXX", "zomg");
                 if (e != null) {
                     deferred.reject(e);
                 } else {
@@ -128,7 +124,7 @@ public class CardDB {
         }).then(new DonePipe<List<Card>, JsonArray, Exception, Void>() {
             @Override
             public Promise<JsonArray, Exception, Void> pipeDone(List<Card> cards) {
-            mCards = new LinkedHashMap<>(cards.size());
+            mCards.clear();
 
             for (Card card : cards) {
                 mCards.put(card.code, card);

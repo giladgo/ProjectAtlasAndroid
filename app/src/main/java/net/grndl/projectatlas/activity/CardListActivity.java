@@ -4,12 +4,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -23,23 +19,23 @@ import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-import net.grndl.projectatlas.R;
-import net.grndl.projectatlas.netrunnerdb.models.Card;
-import net.grndl.projectatlas.netrunnerdb.models.CardDB;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-import org.jdeferred.DoneCallback;
-import org.jdeferred.ProgressCallback;
+import net.grndl.projectatlas.Application;
+import net.grndl.projectatlas.R;
+import net.grndl.projectatlas.netrunnerdb.models.Card;
+import net.grndl.projectatlas.netrunnerdb.models.CardDB;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 public class CardListActivity extends Activity {
 
@@ -49,6 +45,10 @@ public class CardListActivity extends Activity {
     private ListView mListView;
     private CardsAdapter mAdapter;
     private Card mRecommendationsForCard;
+
+    @Inject
+    CardDB mCardDB;
+
 
     private class CardsAdapter extends BaseAdapter implements Filterable {
 
@@ -218,6 +218,7 @@ public class CardListActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((Application)getApplication()).inject(this);
         setContentView(R.layout.activity_main);
 
         mNetrunnerFont = Typeface.createFromAsset(getAssets(), "netrunner.ttf");
@@ -226,13 +227,14 @@ public class CardListActivity extends Activity {
 
 
         if (getIntent().hasExtra("recommendationsFor")) {
-            mRecommendationsForCard = getIntent().getParcelableExtra("recommendationsFor");
+            String cardCode = getIntent().getStringExtra("recommendationsFor");
+            mRecommendationsForCard = mCardDB.getCard(cardCode);
             setActionBarTitle("Recommendations For " + mRecommendationsForCard.title);
-            mCards = Lists.newArrayList(CardDB.getInstance().recommendedCards(mRecommendationsForCard.code));
+            mCards = Lists.newArrayList(mCardDB.recommendedCards(mRecommendationsForCard.code));
         } else {
             mRecommendationsForCard = null;
             setActionBarTitle(null);
-            mCards = new ArrayList<>(Collections2.filter(CardDB.getInstance().allCards(), new Predicate<Card>() {
+            mCards = new ArrayList<>(Collections2.filter(mCardDB.allCards(), new Predicate<Card>() {
                 @Override
                 public boolean apply(Card card) {
                     return card.isReal();
@@ -276,7 +278,7 @@ public class CardListActivity extends Activity {
         switch(item.getItemId()) {
             case R.id.recommendation_menu_item:
                 Intent intent = new Intent(this, CardListActivity.class);
-                intent.putExtra("recommendationsFor", selectedCard);
+                intent.putExtra("recommendationsFor", selectedCard.code);
                 startActivity(intent);
                 return true;
             case R.id.nrdb_menu_item:
@@ -297,13 +299,4 @@ public class CardListActivity extends Activity {
 
     }
 
-    @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        outState.putParcelableArrayList("cards", mCards);
-    }
-
-    @Override
-    protected void onRestoreInstanceState(@NonNull Bundle savedInstanceState) {
-        mCards = savedInstanceState.getParcelableArrayList("cards");
-    }
 }
